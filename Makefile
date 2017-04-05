@@ -26,4 +26,3 @@ upload:
 
 integration_test:
 	./test/test_urlgenerator
-
