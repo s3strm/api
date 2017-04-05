@@ -23,3 +23,7 @@ deploy: upload
 
 upload:
 	@make -C lambdas/urlgenerator/src upload
+
+integration_test:
+	./test/test_urlgenerator
+

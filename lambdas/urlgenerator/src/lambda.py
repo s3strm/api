@@ -2,11 +2,11 @@ import sys
 import boto3
 import os
 
-def video_duration():
+def video_duration(imdb_id):
     client = boto3.client('s3')
     response = client.get_object(
         Bucket=os.environ["MOVIES_BUCKET"],
-        Key="{}/ffprobe.txt".format(event["imdb_id"])
+        Key="{}/ffprobe.txt".format(imdb_id)
     )
     body = response["Body"].read()
 
@@ -16,8 +16,8 @@ def video_duration():
 
     return None
 
-def url_expiration():
-    duration = video_duration()
+def url_expiration(imdb_id):
+    duration = video_duration(imdb_id)
     if duration < os.environ["URL_MINIMUM_VALIDITY"]:
         return os.environ["URL_MINIMUM_VALIDITY"]
     else:
@@ -32,7 +32,7 @@ def lambda_handler(event,context):
             'Key': "{}/video.mp4".format(event["imdb_id"]),
             "ResponseContentType" : "video/mp4",
         },
-        ExpiresIn=url_expiration()
+        ExpiresIn=url_expiration(event["imdb_id"])
     )
 
     return { "url": url }

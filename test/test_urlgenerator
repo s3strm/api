@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+source $(dirname $0)/functions.sh
+imdb_id="tt0000000"
+
+function test_url() {
+  assertEquals "expiration" "14400" "$(expires_in ${imdb_id})"
+  assertEquals "key" "tt0000000/video.mp4" "$(s3_key ${imdb_id})"
+}
+
+source $(dirname $0)/shunit/src/shunit2
+
+# vim: ft=sh
