@@ -14,8 +14,11 @@ Resources:
         S3Bucket: !ImportValue s3strm-settings-bucket
         S3Key: !Ref URLGeneratorCodeKey
       Description: Generate a temporary URL for an IMDB ID
+      Environment:
+        Variables:
+          MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
       FunctionName: s3strm-urlgenerator
-      Handler: urlgenerator.lambda_handler
+      Handler: lambda.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python2.7
