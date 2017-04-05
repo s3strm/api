@@ -63,3 +63,7 @@ Resources:
                 Effect: Allow
                 Action: "s3:*"
                 Resource: !Join [ "", [ "arn:aws:s3:::", !ImportValue s3strm-settings-bucket, "/*" ] ]
+
+Outputs:
+  URLGeneratorLambda:
+    Value: !GetAtt URLGeneratorLambda.Arn
