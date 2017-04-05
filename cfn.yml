@@ -2,9 +2,13 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: The s3strm backend
 
 Parameters:
- URLGeneratorCodeKey:
-   Description: The S3 key where the URLGenerator code can be found
-   Type: String
+  URLGeneratorCodeKey:
+    Description: The S3 key where the URLGenerator code can be found
+    Type: String
+  URLMinimumValidity:
+    Description: The shortest allowable validity for a URL
+    Type: Number
+    Default: 14400    # 4 hours
 
 Resources:
   URLGeneratorLambda:
@@ -17,6 +21,7 @@ Resources:
       Environment:
         Variables:
           MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
+          URL_MINIMUM_VALIDITY: !Ref URLMinimumValidity
       FunctionName: s3strm-urlgenerator
       Handler: lambda.lambda_handler
       MemorySize: 128

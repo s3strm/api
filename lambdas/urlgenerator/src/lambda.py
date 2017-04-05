@@ -18,11 +18,10 @@ def video_duration():
 
 def url_expiration():
     duration = video_duration()
-
-    if duration == None:
-        return int(60 * 60 * 4)
+    if duration < os.environ["URL_MINIMUM_VALIDITY"]:
+        return os.environ["URL_MINIMUM_VALIDITY"]
     else:
-        return int((duration * 2) + 300)
+        return int(duration * 2)
 
 def lambda_handler(event,context):
     client = boto3.client('s3')
