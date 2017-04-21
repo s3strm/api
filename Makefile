@@ -1,4 +1,4 @@
-STACK_NAME = s3strm-backend
+STACK_NAME = s3strm-api
 STACK_TEMPLATE = file://./cfn.yml
 ACTION := $(shell ./bin/cloudformation_action $(STACK_NAME))
 

@@ -52,6 +52,40 @@ Resources:
       Timeout: 120
     DependsOn: Role
 
+  ApiGateway:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Description: s3strm front door
+      Name: s3strm
+
+  ApiResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: "{imdb_id}"
+      RestApiId: !Ref ApiGateway
+
+  StreamMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseParameters:
+              "method.response.header.location": "integration.response.body.url"
+            StatusCode: 302
+        Type: AWS
+        Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":lambda:path", "/2015-03-31/functions/", { "Fn::GetAtt": [ "URLGeneratorLambda", "Arn" ] }, "/invocations" ] ]
+      MethodResponses:
+        -
+          ResponseParameters:
+            method.response.header.location: True
+          StatusCode: 302
+      ResourceId: !Ref ApiResource
+      RestApiId: !Ref ApiGateway
+
   Role:
     Type: AWS::IAM::Role
     Properties:
