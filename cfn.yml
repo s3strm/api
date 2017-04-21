@@ -74,14 +74,28 @@ Resources:
       Description: s3strm front door
       Name: s3strm
 
-  ApiResource:
+  ApiMovieResource:
     Type: "AWS::ApiGateway::Resource"
     Properties:
       ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: "movie"
+      RestApiId: !Ref ApiGateway
+
+  ApiMovieImdbResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !Ref ApiMovieResource
       PathPart: "{imdb_id}"
       RestApiId: !Ref ApiGateway
 
-  StreamMethod:
+  ApiMovieStreamResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !Ref ApiMovieImdbResource
+      PathPart: "stream"
+      RestApiId: !Ref ApiGateway
+
+  MovieStreamMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
@@ -99,7 +113,7 @@ Resources:
           ResponseParameters:
             method.response.header.location: True
           StatusCode: 302
-      ResourceId: !Ref ApiResource
+      ResourceId: !Ref ApiMovieStreamResource
       RestApiId: !Ref ApiGateway
 
   Role:
