@@ -52,6 +52,22 @@ Resources:
       Timeout: 120
     DependsOn: Role
 
+  ApiGatewayStage:
+    Type: "AWS::ApiGateway::Stage"
+    Properties:
+      # TODO: Add an SSL certificate
+      # ClientCertificateId: String
+      DeploymentId: !Ref ApiGatewayDeployment
+      Description: "Production"
+      RestApiId: !Ref ApiGateway
+      StageName: prod
+
+  ApiGatewayDeployment:
+    Type: "AWS::ApiGateway::Deployment"
+    Properties:
+      Description: "Production"
+      RestApiId: !Ref ApiGateway
+
   ApiGateway:
     Type: "AWS::ApiGateway::RestApi"
     Properties:
