@@ -52,6 +52,22 @@ Resources:
       Timeout: 120
     DependsOn: Role
 
+  URLGeneratorInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join [ ":", [ "arn:aws:execute-api", Ref: "AWS::Region", Ref: "AWS::AccountId", "*" ] ]
+      FunctionName: !GetAtt URLGeneratorLambda.Arn
+
+  RefeederInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join [ ":", [ "arn:aws:execute-api", Ref: "AWS::Region", Ref: "AWS::AccountId", "*" ] ]
+      FunctionName: !GetAtt RefeederLambda.Arn
+
   ApiGatewayStage:
     Type: "AWS::ApiGateway::Stage"
     Properties:
@@ -127,6 +143,7 @@ Resources:
             Principal:
               Service:
                 - "lambda.amazonaws.com"
+                - "apigateway.amazonaws.com"
             Action: "sts:AssumeRole"
       Path: "/"
       Policies:
