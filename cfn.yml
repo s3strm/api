@@ -123,6 +123,8 @@ Resources:
               "method.response.header.location": "integration.response.body.url"
             StatusCode: 302
         Type: AWS
+        RequestTemplates:
+          "application/json": "{ \"imdb_id\": \"$input.params('imdb_id')\" }\n"
         Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":lambda:path", "/2015-03-31/functions/", { "Fn::GetAtt": [ "URLGeneratorLambda", "Arn" ] }, "/invocations" ] ]
       MethodResponses:
         -
