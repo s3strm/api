@@ -122,7 +122,8 @@ Resources:
       Integration:
         IntegrationHttpMethod: POST
         IntegrationResponses:
-          - ResponseParameters:
+          -
+            ResponseParameters:
               "method.response.header.location": "integration.response.body.url"
             StatusCode: 302
         Type: AWS
@@ -175,6 +176,38 @@ Resources:
       ResourceId: !Ref ApiMoviePosterResource
       RestApiId: !Ref ApiGateway
 
+  ApiMovieRefeedResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !Ref ApiMovieImdbResource
+      PathPart: refeed
+      RestApiId: !Ref ApiGateway
+
+  MovieRefeedMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          -
+            ResponseParameters:
+              method.response.header.Date: integration.response.body.date
+            StatusCode: 200
+
+        Type: AWS
+        RequestTemplates:
+          "application/json": "{ \"imdb_id\": \"$input.params('imdb_id')\" }\n"
+        Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":lambda:path", "/2015-03-31/functions/", { "Fn::GetAtt": [ "RefeederLambda", "Arn" ] }, "/invocations" ] ]
+      MethodResponses:
+        -
+          ResponseParameters:
+            method.response.header.Date: true
+          StatusCode: 200
+      ResourceId: !Ref ApiMovieRefeedResource
+      RestApiId: !Ref ApiGateway
+
   Role:
     Type: AWS::IAM::Role
     Properties:
@@ -209,6 +242,10 @@ Resources:
                 Effect: Allow
                 Action: "s3:*"
                 Resource: !Join [ "", [ "arn:aws:s3:::", !ImportValue s3strm-settings-bucket, "/*" ] ]
+              -
+                Effect: Allow
+                Action: "sns:publish"
+                Resource: !ImportValue s3strm-video-created-topic
 
 Outputs:
   URLGeneratorLambda:

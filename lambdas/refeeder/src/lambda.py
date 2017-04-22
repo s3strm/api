@@ -13,7 +13,7 @@ def lambda_handler(event,context):
         MessageStructure='string',
     )
 
-    return response
+    return response["ResponseMetadata"]
 
 if __name__ == "__main__":
     event = { "imdb_id": "tt0000000" }
