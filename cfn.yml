@@ -83,6 +83,9 @@ Resources:
     Properties:
       Description: "Production"
       RestApiId: !Ref ApiGateway
+    DependsOn:
+      - MoviePosterMethod
+      - MovieStreamMethod
 
   ApiGateway:
     Type: "AWS::ApiGateway::RestApi"
