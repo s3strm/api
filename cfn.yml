@@ -288,6 +288,44 @@ Resources:
       ResourceId: !Ref ApiMovieKodiStrmResource
       RestApiId: !Ref ApiGateway
 
+  ApiMovieKodiNfoResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !Ref ApiMovieKodiResource
+      PathPart: nfo
+      RestApiId: !Ref ApiGateway
+
+  MovieKodiNfoMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.imdb_id: true
+      Integration:
+        Credentials: !GetAtt Role.Arn
+        IntegrationHttpMethod: GET
+        IntegrationResponses:
+          - SelectionPattern: \d{3}
+            ResponseParameters:
+              method.response.header.Content-Type: integration.response.header.Content-Type
+              method.response.header.Date: integration.response.header.Date
+              method.response.header.Content-Length: integration.response.header.content-length
+            StatusCode: 200
+        Type: AWS
+        RequestParameters:
+          "integration.request.path.imdb_id": "method.request.path.imdb_id"
+        Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":s3:path/", { "Fn::ImportValue": "s3strm-movies-bucket" }, "/{imdb_id}/kodi.nfo" ] ]
+      MethodResponses:
+        -
+          StatusCode: 200
+          ResponseParameters:
+            method.response.header.Content-Type: true
+            method.response.header.Content-Length: true
+            method.response.header.Date: true
+      ResourceId: !Ref ApiMovieKodiNfoResource
+      RestApiId: !Ref ApiGateway
+
   Role:
     Type: AWS::IAM::Role
     Properties:
