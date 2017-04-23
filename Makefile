@@ -5,6 +5,8 @@ ACTION := $(shell ./bin/cloudformation_action $(STACK_NAME))
 URLGENERATOR_KEY = $(shell make -C lambdas/urlgenerator/src lambda_key)
 REFEEDER_KEY = $(shell make -C lambdas/refeeder/src lambda_key)
 
+UPLOAD ?= true
+
 export AWS_SECRET_ACCESS_KEY
 export AWS_DEFAULT_REGION
 export AWS_ACCESS_KEY_ID
@@ -24,8 +26,10 @@ deploy: upload
 	  --stack-name ${STACK_NAME}
 
 upload:
+ifeq ($(UPLOAD),true)
 	@make -C lambdas/urlgenerator/src upload
 	@make -C lambdas/refeeder/src upload
+endif
 
 integration_test:
 	./test/test_urlgenerator
