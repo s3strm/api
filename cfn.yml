@@ -84,8 +84,10 @@ Resources:
       Description: "Production"
       RestApiId: !Ref ApiGateway
     DependsOn:
-      - MoviePosterMethod
+      - MoviePosterGetMethod
+      - MoviePosterPutMethod
       - MovieStreamMethod
+      - MovieRefeedMethod
 
   ApiGateway:
     Type: "AWS::ApiGateway::RestApi"
@@ -145,7 +147,7 @@ Resources:
       PathPart: poster
       RestApiId: !Ref ApiGateway
 
-  MoviePosterMethod:
+  MoviePosterGetMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
@@ -173,6 +175,40 @@ Resources:
             method.response.header.Content-Type: true
             method.response.header.Content-Length: true
             method.response.header.Date: true
+      ResourceId: !Ref ApiMoviePosterResource
+      RestApiId: !Ref ApiGateway
+
+  MoviePosterPutMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      RequestParameters:
+        method.request.path.imdb_id: true
+        method.request.header.Content-Type: true
+        method.request.header.x-amz-acl: true
+        method.request.header.Expect: true
+      Integration:
+        Credentials: !GetAtt Role.Arn
+        IntegrationHttpMethod: PUT
+        IntegrationResponses:
+          - SelectionPattern: \d{3}
+            ResponseParameters:
+              method.response.header.Content-Type: integration.response.header.Content-Type
+              method.response.header.Content-Length: integration.response.header.content-length
+            StatusCode: 200
+        Type: AWS
+        RequestParameters:
+          integration.request.header.Content-Type: method.request.header.Content-Type
+          integration.request.path.imdb_id: method.request.path.imdb_id
+        Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":s3:path/", { "Fn::ImportValue": "s3strm-movies-bucket" }, "/{imdb_id}/poster-custom.jpg" ] ]
+        PassthroughBehavior: "when_no_match"
+      MethodResponses:
+        -
+          StatusCode: 200
+          ResponseParameters:
+            method.response.header.Content-Type: true
+            method.response.header.Content-Length: true
       ResourceId: !Ref ApiMoviePosterResource
       RestApiId: !Ref ApiGateway
 
