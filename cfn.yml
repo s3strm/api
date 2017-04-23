@@ -231,7 +231,6 @@ Resources:
             ResponseParameters:
               method.response.header.Date: integration.response.body.date
             StatusCode: 200
-
         Type: AWS
         RequestTemplates:
           "application/json": "{ \"imdb_id\": \"$input.params('imdb_id')\" }\n"
@@ -242,6 +241,51 @@ Resources:
             method.response.header.Date: true
           StatusCode: 200
       ResourceId: !Ref ApiMovieRefeedResource
+      RestApiId: !Ref ApiGateway
+
+  ApiMovieKodiResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !Ref ApiMovieImdbResource
+      PathPart: kodi
+      RestApiId: !Ref ApiGateway
+
+  ApiMovieKodiStrmResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      ParentId: !Ref ApiMovieKodiResource
+      PathPart: strm
+      RestApiId: !Ref ApiGateway
+
+  MovieKodiStrmMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.imdb_id: true
+      Integration:
+        Credentials: !GetAtt Role.Arn
+        IntegrationHttpMethod: GET
+        IntegrationResponses:
+          - SelectionPattern: \d{3}
+            ResponseParameters:
+              method.response.header.Content-Type: integration.response.header.Content-Type
+              method.response.header.Date: integration.response.header.Date
+              method.response.header.Content-Length: integration.response.header.content-length
+            StatusCode: 200
+        Type: AWS
+        RequestParameters:
+          "integration.request.path.imdb_id": "method.request.path.imdb_id"
+        Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":s3:path/", { "Fn::ImportValue": "s3strm-movies-bucket" }, "/{imdb_id}/kodi.strm" ] ]
+      MethodResponses:
+        -
+          StatusCode: 200
+          ResponseParameters:
+            method.response.header.Content-Type: true
+            method.response.header.Content-Length: true
+            method.response.header.Date: true
+      ResourceId: !Ref ApiMovieKodiStrmResource
       RestApiId: !Ref ApiGateway
 
   Role:
