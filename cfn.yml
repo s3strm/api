@@ -71,12 +71,21 @@ Resources:
   ApiGatewayStage:
     Type: "AWS::ApiGateway::Stage"
     Properties:
-      # TODO: Add an SSL certificate
-      # ClientCertificateId: String
       DeploymentId: !Ref ApiGatewayDeployment
       Description: "Production"
       RestApiId: !Ref ApiGateway
       StageName: prod
+
+  ApiGatewayDnsRecord:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Comment: DNS Record for API Gateway
+      HostedZoneId: !ImportValue s3strm-api-gateway-domain-hosted-zone-id
+      Name: !ImportValue s3strm-api-gateway-domain
+      ResourceRecords:
+        - !Join [ "", [ Ref: ApiGateway, ".execute-api.", Ref: "AWS::Region", ".amazonaws.com" ] ]
+      TTL: 180
+      Type: CNAME
 
   ApiGatewayMapping:
     Type: "AWS::ApiGateway::BasePathMapping"
