@@ -78,6 +78,13 @@ Resources:
       RestApiId: !Ref ApiGateway
       StageName: prod
 
+  ApiGatewayMapping:
+    Type: "AWS::ApiGateway::BasePathMapping"
+    Properties:
+      DomainName: !ImportValue s3strm-api-gateway-domain
+      RestApiId: !Ref ApiGateway
+      Stage: !Ref ApiGatewayStage
+
   ApiGatewayDeployment:
     Type: "AWS::ApiGateway::Deployment"
     Properties:
