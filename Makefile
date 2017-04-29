@@ -4,6 +4,7 @@ ACTION := $(shell ./bin/cloudformation_action $(STACK_NAME))
 
 URLGENERATOR_KEY = $(shell make -C lambdas/urlgenerator/src lambda_key)
 REFEEDER_KEY = $(shell make -C lambdas/refeeder/src lambda_key)
+LISTER_KEY = $(shell make -C lambdas/lister/src lambda_key)
 
 UPLOAD ?= true
 
@@ -20,6 +21,7 @@ deploy: upload
 	  --parameters                                                          \
 	    ParameterKey=URLGeneratorCodeKey,ParameterValue=${URLGENERATOR_KEY} \
 	    ParameterKey=RefeederCodeKey,ParameterValue=${REFEEDER_KEY}         \
+	    ParameterKey=ListerCodeKey,ParameterValue=${LISTER_KEY}             \
 	  --capabilities CAPABILITY_IAM                                         \
 	  2>&1
 	@aws cloudformation wait stack-${ACTION}-complete \
@@ -29,6 +31,7 @@ upload:
 ifeq ($(UPLOAD),true)
 	@make -C lambdas/urlgenerator/src upload
 	@make -C lambdas/refeeder/src upload
+	@make -C lambdas/lister/src upload
 endif
 
 integration_test:
