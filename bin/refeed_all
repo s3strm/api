@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+SETTINGS_STACK="s3strm-settings"
+API_DOMAIN=$(
+  aws cloudformation describe-stacks \
+    --stack-name "${SETTINGS_STACK}" \
+    --query 'Stacks[].Outputs[?OutputKey==`APIGatewayDomain`].OutputValue' \
+    --output "text"
+)
+
+IMDB_IDS=$(curl https://${API_DOMAIN}/movie/ | jq -r .[])
+
+for imdb_id in ${IMDB_IDS}; do
+  curl https://${API_DOMAIN}/movie/${imdb_id}/refeed 2> /dev/null
+done
