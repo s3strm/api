@@ -28,6 +28,7 @@ Resources:
         Variables:
           MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
           URL_MINIMUM_VALIDITY: !Ref URLMinimumValidity
+          API_KEY: !ImportValue s3strm-api-key
       FunctionName: s3strm-urlgenerator
       Handler: lambda.lambda_handler
       MemorySize: 128
@@ -194,8 +195,10 @@ Resources:
             StatusCode: 302
         Type: AWS
         RequestTemplates:
-          "application/json": "{ \"imdb_id\": \"$input.params('imdb_id')\" }\n"
+          "application/json": "{ \"imdb_id\": \"$input.params('imdb_id')\", \"api_key\": \"$input.params('user-agent')\" }\n"
         Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":lambda:path", "/2015-03-31/functions/", { "Fn::GetAtt": [ "URLGeneratorLambda", "Arn" ] }, "/invocations" ] ]
+      RequestParameters:
+        method.request.header.user-agent: true
       MethodResponses:
         -
           ResponseParameters:

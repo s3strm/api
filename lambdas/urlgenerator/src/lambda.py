@@ -24,6 +24,14 @@ def url_expiration(imdb_id):
         return int(duration * 2)
 
 def lambda_handler(event,context):
+    # XXX: We have taken an API key from the `User-Agent` header. If Kodi
+    # supported forwarding the X-Api-Key header we could just use the built-in
+    # API Key of API Gateway.
+    # See https://github.com/xbmc/xbmc/blob/2966375f853bb01c3be571a892190f4a128c224b/xbmc/filesystem/CurlFile.cpp#L833-L847
+    if str(event["api_key"]) != str(os.environ["API_KEY"]):
+        print("key is bad")
+        return false
+
     client = boto3.client('s3')
     url = client.generate_presigned_url(
         'get_object',
@@ -38,5 +46,5 @@ def lambda_handler(event,context):
     return { "url": url }
 
 if __name__ == "__main__":
-    event = { "imdb_id": "tt0000000" }
+    event = { "api_key": "testing", "imdb_id": "tt0000000" }
     print(lambda_handler(event, None))
