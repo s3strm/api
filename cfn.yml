@@ -162,6 +162,24 @@ Resources:
       PathPart: "stream"
       RestApiId: !Ref ApiGateway
 
+  MovieListMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          -
+            StatusCode: 200
+        Type: AWS
+        Uri: !Join [ "", [ "arn:aws:apigateway:", { "Ref": "AWS::Region" }, ":lambda:path", "/2015-03-31/functions/", { "Fn::GetAtt": [ "ListerLambda", "Arn" ] }, "/invocations" ] ]
+      MethodResponses:
+        -
+          StatusCode: 200
+      ResourceId: !Ref ApiMovieResource
+      RestApiId: !Ref ApiGateway
+
   MovieStreamMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
