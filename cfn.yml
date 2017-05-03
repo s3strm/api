@@ -167,6 +167,7 @@ Resources:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
+      ApiKeyRequired: True
       HttpMethod: GET
       Integration:
         IntegrationHttpMethod: POST
@@ -218,6 +219,7 @@ Resources:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
+      ApiKeyRequired: True
       HttpMethod: GET
       RequestParameters:
         method.request.path.imdb_id: true
@@ -249,6 +251,7 @@ Resources:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
+      ApiKeyRequired: True
       HttpMethod: PUT
       RequestParameters:
         method.request.path.imdb_id: true
@@ -290,6 +293,7 @@ Resources:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
+      ApiKeyRequired: True
       HttpMethod: GET
       Integration:
         IntegrationHttpMethod: POST
@@ -328,6 +332,7 @@ Resources:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
+      ApiKeyRequired: True
       HttpMethod: GET
       RequestParameters:
         method.request.path.imdb_id: true
@@ -366,6 +371,7 @@ Resources:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: NONE
+      ApiKeyRequired: True
       HttpMethod: GET
       RequestParameters:
         method.request.path.imdb_id: true
